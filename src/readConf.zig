@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const Addr = union { ip: []u8, port: i32 };
+const Addr = union { ip: []const u8, port: u16 };
 
 pub fn confReader() !Addr {
     var buffer: [1024]u8 = undefined;
@@ -11,11 +11,11 @@ pub fn confReader() !Addr {
         var splitted_line = std.mem.split(u8, line, "=");
 
         if (std.mem.eql(u8, splitted_line.first(), "IP")) {
-            std.debug.print("{s}\n", .{splitted_line.next().?});
+            address.ip = splitted_line.next().?;
         }
 
         if (std.mem.eql(u8, splitted_line.first(), "PORT")) {
-            address.port = std.fmt.parseInt(u8, splitted_line.next().?, 10);
+            address.port = try std.fmt.parseInt(u16, splitted_line.next().?, 10);
         }
     }
 
